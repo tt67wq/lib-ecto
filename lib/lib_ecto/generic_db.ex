@@ -1,5 +1,5 @@
 defmodule LibEcto.GenericDB do
-  @moduledoc "genericdb.md"
+  @moduledoc "docs/genericdb.md"
              |> File.read!()
              |> String.split("<!-- MDOC !-->")
              |> Enum.fetch!(1)
@@ -14,14 +14,13 @@ defmodule LibEcto.GenericDB do
       import Ecto.Changeset
       import Ecto.Query
 
-      alias Ecto.Multi
-
       @repo unquote(repo)
       @columns unquote(columns)
       @filters unquote(filters)
       @schema unquote(schema)
 
       @type schema_t :: @schema.t()
+      @type columns :: [atom()]
       @type err_t :: {:error, any()}
 
       @spec create_one(map()) :: {:ok, schema_t()} | err_t()
@@ -42,7 +41,7 @@ defmodule LibEcto.GenericDB do
         end)
       end
 
-      @spec get_one(map(), [atom()]) :: {:ok, schema_t() | nil} | err_t()
+      @spec get_one(map(), columns()) :: {:ok, schema_t() | nil} | err_t()
       def get_one(params, columns \\ @columns) do
         with {:ok, condition} <- build_condition(params) do
           query = from(m in @schema, where: ^condition, select: ^columns)
@@ -53,7 +52,7 @@ defmodule LibEcto.GenericDB do
         end
       end
 
-      @spec get_one!(map(), [atom()]) :: {:ok, schema_t()} | err_t()
+      @spec get_one!(map(), columns()) :: {:ok, schema_t()} | err_t()
       def get_one!(params, columns \\ @columns) do
         get_one(params, columns)
         |> case do
@@ -63,7 +62,7 @@ defmodule LibEcto.GenericDB do
         end
       end
 
-      @spec get_all(map(), [atom()]) :: {:ok, [schema_t()]} | err_t()
+      @spec get_all(map(), columns) :: {:ok, [schema_t()]} | err_t()
       def get_all(params, columns \\ @columns) do
         with {:ok, condition} <- build_condition(params) do
           query = from(m in @schema, where: ^condition, select: ^columns)
@@ -77,7 +76,7 @@ defmodule LibEcto.GenericDB do
       @spec get_limit(
               params :: %{String.t() => term()},
               limit :: non_neg_integer,
-              columns :: [atom] | :all,
+              columns :: columns() | :all,
               sort_by :: keyword
             ) :: {:ok, [schema_t()]} | err_t()
       def get_limit(params, limit, columns \\ @columns, sort_by \\ [asc: :id])
@@ -114,7 +113,7 @@ defmodule LibEcto.GenericDB do
         end
       end
 
-      @spec get_by_page(map(), integer, integer, [atom()], keyword) ::
+      @spec get_by_page(map(), integer, integer, columns(), keyword) ::
               {:ok, %{list: [schema_t()], total: non_neg_integer()}} | err_t()
       def get_by_page(
             params,
@@ -162,10 +161,6 @@ defmodule LibEcto.GenericDB do
         |> change(attrs)
         |> @repo.update()
       end
-
-      @spec drop_one(schema_t()) :: {:ok, any()} | err_t()
-      def drop_one(item),
-        do: update_one(item, removed_at: :os.system_time(:milli_seconds))
 
       @spec delete_one(schema_t()) :: {:ok, any()} | err_t()
       def delete_one(item), do: @repo.delete(item)

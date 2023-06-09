@@ -46,6 +46,12 @@ defmodule Sample.DB do
     do: {:ok, dynamic([m], ^dynamic and m.name in ^value)}
 
     def filter(_, dynamic, _), do: {:ok, dynamic}
+
+
+    # you can use ecto's ability to build complicate query or update or transaction if GenericDB can't satisfy your need
+    def other_complicated_query_or_update() do
+      # do something
+    end
 end
 ```
 
