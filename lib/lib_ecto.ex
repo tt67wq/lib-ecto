@@ -1,5 +1,5 @@
-defmodule LibEcto.GenericDB do
-  @moduledoc "docs/genericdb.md"
+defmodule LibEcto do
+  @moduledoc "README.md"
              |> File.read!()
              |> String.split("<!-- MDOC !-->")
              |> Enum.fetch!(1)
@@ -8,7 +8,7 @@ defmodule LibEcto.GenericDB do
     repo = Access.get(opts, :repo)
     schema = Access.get(opts, :schema)
     columns = Access.get(opts, :columns)
-    filters = Access.get(opts, :filters, columns)
+    filters = Access.get(opts, :filters, [:id])
 
     quote do
       import Ecto.Changeset
