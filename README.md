@@ -137,8 +137,21 @@ iex> {:ok, m} = Sample.DB.get_one(%{"name" => "test"})
 iex> Sample.DB.update_one(m, name: "test2")
 {:ok, %Simple.Schema{id: "2JIebKci1ZgKenvhllJa3PMbydB", name: "test2", value: "testv"}}
 ```
+All supported functions:
 
-More usage, please check the test cases.
+- create_one/1
+- get_one/1
+- get_one!/1
+- get_all/2
+- get_limit/4
+- count/1
+- exists?/1
+- get_by_page/5
+- update_one/2
+- delete_one/1
+- delete_all/1
+
+For more usage details, please check the test cases, which covers all the supported functions.
 
 ## Installation
 
