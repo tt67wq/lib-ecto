@@ -147,7 +147,7 @@ The package can be installed by adding `lib_ecto` to your list of dependencies i
 ```elixir
 def deps do
   [
-    {:lib_ecto, "~> 0.1.0"}
+    {:lib_ecto, "~> 0.2.0"}
   ]
 end
 ```
