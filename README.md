@@ -151,3 +151,33 @@ def deps do
   ]
 end
 ```
+
+## Test
+
+Test cases use [ecto_sqlite3](https://github.com/elixir-sqlite/ecto_sqlite3) as database.
+
+
+```bash
+Finished in 1.5 seconds (0.00s async, 1.5s sync)
+17 tests, 0 failures
+
+Randomized with seed 336538
+
+Generating cover results ...
+
+Percentage | Module
+-----------|--------------------------
+    40.00% | LibEcto.KsuidType
+    78.95% | LibEcto.Ksuid
+   100.00% | LibEcto
+   100.00% | LibEcto.Base62
+-----------|--------------------------
+    76.19% | Total
+
+Coverage test failed, threshold not met:
+
+    Coverage:   76.19%
+    Threshold:  90.00%
+
+Generated HTML coverage results in "cover" directory
+```
