@@ -19,10 +19,11 @@ defmodule LibEcto do
       @filters unquote(filters)
       @schema unquote(schema)
 
+      # types
       @type schema_t :: @schema.t()
       @type params :: %{atom() => term()}
       @type filter_t :: %{String.t() => term()}
-      @type columns :: [atom()]
+      @type columns :: [atom()] | :all
       @type err_t :: {:error, any()}
 
       @doc """
@@ -41,7 +42,7 @@ defmodule LibEcto do
         |> @repo.insert()
       end
 
-      defp init_dynamic(), do: dynamic([m], m.removed_at == 0)
+      defp init_dynamic(), do: apply(__MODULE__, :init_filter, [])
 
       defp build_condition(params) do
         Enum.reduce_while(@filters, {:ok, init_dynamic()}, fn filter, {:ok, acc} ->
@@ -57,13 +58,14 @@ defmodule LibEcto do
 
       ## Examples
 
-          iex> Sample.DB.get_one(%{name: "test"})
+          iex> Sample.DB.get_one(%{"name"=> "test"})
           {:ok, %Simple.Schema{id: "2JIebKci1ZgKenvhllJa3PMbydB", name: "test", value: "testv"}}
 
       """
       @spec get_one(filter_t(), columns()) :: {:ok, schema_t() | nil} | err_t()
       def get_one(params, columns \\ @columns) do
         with {:ok, condition} <- build_condition(params) do
+          condition != init_dynamic() || raise "You must provide at least one filter"
           query = from(m in @schema, where: ^condition, select: ^columns)
 
           query
@@ -78,7 +80,7 @@ defmodule LibEcto do
 
       ## Examples
 
-          iex> Sample.DB.get_one!(%{name: "not-exists"})
+          iex> Sample.DB.get_one!(%{"name"=> "not-exists"})
           {:error, 404}
       """
       @spec get_one!(filter_t(), columns()) :: {:ok, schema_t()} | err_t()
@@ -96,12 +98,13 @@ defmodule LibEcto do
 
       ## Examples
 
-          iex> Sample.DB.get_all(%{name: "test"})
+          iex> Sample.DB.get_all(%{"name"=> "test"})
           {:ok, [%Simple.Schema{id: "2JIebKci1ZgKenvhllJa3PMbydB", name: "test", value: "testv"}]}
       """
       @spec get_all(filter_t(), columns) :: {:ok, [schema_t()]} | err_t()
       def get_all(params, columns \\ @columns) do
         with {:ok, condition} <- build_condition(params) do
+          condition != init_dynamic() || raise "You must provide at least one filter"
           query = from(m in @schema, where: ^condition, select: ^columns)
 
           query
@@ -115,7 +118,7 @@ defmodule LibEcto do
 
       ## Examples
 
-          iex> Sample.DB.get_limit(%{name: "test"}, 1, :all, [desc: :id])
+          iex> Sample.DB.get_limit(%{"name"=> "test"}, 1, :all, [desc: :id])
           {:ok, [%Simple.Schema{id: "2JIebKci1ZgKenvhllJa3PMbydB", name: "test", value: "testv"}]}
       """
       @spec get_limit(
@@ -147,7 +150,7 @@ defmodule LibEcto do
 
       ## Examples
 
-          iex> Sample.DB.count(%{name: "test"})
+          iex> Sample.DB.count(%{"name"=> "test"})
           {:ok, 1}
       """
       @spec count(filter_t()) :: {:ok, non_neg_integer}
@@ -163,12 +166,13 @@ defmodule LibEcto do
 
       ## Examples
 
-          iex> Sample.DB.exists?(%{name: "test"})
+          iex> Sample.DB.exists?(%{"name"=> "test"})
           true
       """
       @spec exists?(filter_t()) :: boolean
       def exists?(params) do
         with {:ok, conditions} <- build_condition(params) do
+          conditions != init_dynamic() || raise "You must provide at least one filter"
           query = from(m in @schema, where: ^conditions)
           @repo.exists?(query)
         end
@@ -181,7 +185,7 @@ defmodule LibEcto do
 
       ## Examples
 
-          iex> Sample.DB.get_by_page(%{name: "test"}, 1, 10)
+          iex> Sample.DB.get_by_page(%{"name"=> "test"}, 1, 10)
           {:ok, %{
             list: [%Simple.Schema{id: "2JIebKci1ZgKenvhllJa3PMbydB", name: "test", value: "testv"}]}
             total: 1
@@ -200,10 +204,10 @@ defmodule LibEcto do
             page,
             page_size,
             columns \\ @columns,
-            sort_by \\ [desc: :inserted_at]
+            sort_by \\ [desc: :id]
           )
 
-      def get_by_page(params, page, page_size, [:all], sort_by),
+      def get_by_page(params, page, page_size, :all, sort_by),
         do: get_by_page(params, page, page_size, @columns, sort_by)
 
       def get_by_page(params, page, page_size, columns, sort_by) do
@@ -241,8 +245,8 @@ defmodule LibEcto do
 
       ## Examples
 
-          iex> {:ok, return_value} = Sample.DB.get_one(%{name: "test"})
-          iex> Sample.DB.update_one(return_value, %{name: "test"})
+          iex> {:ok, return_value} = Sample.DB.get_one(%{"name"=> "test"})
+          iex> Sample.DB.update_one(return_value, %{"name"=> "test"})
       """
       @spec update_one(item :: schema_t(), attrs :: keyword() | %{atom() => term()}) ::
               {:ok, any()} | err_t()
@@ -257,7 +261,7 @@ defmodule LibEcto do
 
       ## Examples
 
-          iex> {:ok, return_value} = Sample.DB.get_one(%{name: "test"})
+          iex> {:ok, return_value} = Sample.DB.get_one(%{"name"=> "test"})
           iex> Sample.DB.delete_one(return_value)
       """
       @spec delete_one(schema_t()) :: {:ok, any()} | err_t()
@@ -268,7 +272,7 @@ defmodule LibEcto do
 
       ## Examples
 
-          iex> Sample.DB.delete_all(%{name: "test"})
+          iex> Sample.DB.delete_all(%{"name"=> "test"})
       """
       @spec delete_all(filter_t()) :: {non_neg_integer(), nil | [term()]} | err_t()
       def delete_all(params) do
