@@ -1,5 +1,5 @@
 defmodule LibEcto.Ksuid do
-  @moduledoc "docs/ksuid.md"
+  @moduledoc "ksuid.md"
              |> File.read!()
              |> String.split("<!-- MDOC !-->")
              |> Enum.fetch!(1)
