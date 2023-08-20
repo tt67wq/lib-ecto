@@ -1,4 +1,5 @@
 defmodule LibEcto.Ksuid do
+  @external_resource "ksuid.md"
   @moduledoc "ksuid.md"
              |> File.read!()
              |> String.split("<!-- MDOC !-->")
