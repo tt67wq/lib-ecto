@@ -1,6 +1,5 @@
 defmodule LibEcto.Ksuid do
-  @external_resource "ksuid.md"
-  @moduledoc "ksuid.md"
+  @moduledoc Path.join(__DIR__, "ksuid.md")
              |> File.read!()
              |> String.split("<!-- MDOC !-->")
              |> Enum.fetch!(1)
