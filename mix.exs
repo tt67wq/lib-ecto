@@ -1,4 +1,5 @@
 defmodule LibEcto.MixProject do
+  @moduledoc false
   use Mix.Project
 
   @name "lib_ecto"
