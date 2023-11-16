@@ -3,7 +3,7 @@ defmodule LibEcto.MixProject do
   use Mix.Project
 
   @name "lib_ecto"
-  @version "0.2.3"
+  @version "0.2.4"
   @repo_url "https://github.com/tt67wq/lib-ecto"
   @description "A library to make Ecto easier to use"
 
@@ -11,7 +11,7 @@ defmodule LibEcto.MixProject do
     [
       app: :lib_ecto,
       version: @version,
-      elixir: "~> 1.14",
+      elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       source_url: @repo_url,
