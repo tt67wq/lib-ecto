@@ -1,8 +1,9 @@
 defmodule LibEcto.MixProject do
+  @moduledoc false
   use Mix.Project
 
   @name "lib_ecto"
-  @version "0.2.3"
+  @version "0.2.4"
   @repo_url "https://github.com/tt67wq/lib-ecto"
   @description "A library to make Ecto easier to use"
 
@@ -10,7 +11,7 @@ defmodule LibEcto.MixProject do
     [
       app: :lib_ecto,
       version: @version,
-      elixir: "~> 1.14",
+      elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       source_url: @repo_url,
@@ -31,9 +32,9 @@ defmodule LibEcto.MixProject do
   defp deps do
     [
       {:jason, "~> 1.4"},
-      {:ecto_sql, "~> 3.10"},
+      {:ecto_sql, "~> 3.11"},
       {:ecto_sqlite3, "~> 0.10", only: :test},
-      {:ex_doc, "~> 0.29", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.30", only: :dev, runtime: false}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]
