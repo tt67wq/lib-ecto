@@ -24,6 +24,7 @@ defmodule LibEcto.KsuidType do
   """
 
   use Ecto.Type
+
   alias LibEcto.Ksuid
 
   def type, do: :string

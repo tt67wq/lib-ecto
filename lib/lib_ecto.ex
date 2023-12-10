@@ -1,10 +1,10 @@
 defmodule LibEcto do
-  @external_resource "README.md"
   @moduledoc "README.md"
              |> File.read!()
              |> String.split("<!-- MDOC !-->")
              |> Enum.fetch!(1)
 
+  @external_resource "README.md"
   defmacro __using__(opts) do
     repo = Access.get(opts, :repo)
     schema = Access.get(opts, :schema)
@@ -43,7 +43,7 @@ defmodule LibEcto do
         |> @repo.insert()
       end
 
-      defp init_dynamic(), do: apply(__MODULE__, :init_filter, [])
+      defp init_dynamic, do: apply(__MODULE__, :init_filter, [])
 
       defp build_condition(params) do
         Enum.reduce_while(@filters, {:ok, init_dynamic()}, fn filter, {:ok, acc} ->
@@ -86,7 +86,8 @@ defmodule LibEcto do
       """
       @spec get_one!(filter_t(), columns()) :: {:ok, schema_t()} | err_t()
       def get_one!(params, columns \\ @columns) do
-        get_one(params, columns)
+        params
+        |> get_one(columns)
         |> case do
           {:ok, nil} -> {:error, 404}
           {:ok, ret} -> {:ok, ret}
@@ -200,16 +201,9 @@ defmodule LibEcto do
               sort_by :: keyword()
             ) ::
               {:ok, %{list: [schema_t()], total: non_neg_integer()}} | err_t()
-      def get_by_page(
-            params,
-            page,
-            page_size,
-            columns \\ @columns,
-            sort_by \\ [desc: :id]
-          )
+      def get_by_page(params, page, page_size, columns \\ @columns, sort_by \\ [desc: :id])
 
-      def get_by_page(params, page, page_size, :all, sort_by),
-        do: get_by_page(params, page, page_size, @columns, sort_by)
+      def get_by_page(params, page, page_size, :all, sort_by), do: get_by_page(params, page, page_size, @columns, sort_by)
 
       def get_by_page(params, page, page_size, columns, sort_by) do
         with {:ok, conditions} <- build_condition(params) do

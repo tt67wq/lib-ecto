@@ -1,5 +1,6 @@
 defmodule LibEcto.Ksuid do
-  @moduledoc Path.join(__DIR__, "ksuid.md")
+  @moduledoc __DIR__
+             |> Path.join("ksuid.md")
              |> File.read!()
              |> String.split("<!-- MDOC !-->")
              |> Enum.fetch!(1)
@@ -12,13 +13,13 @@ defmodule LibEcto.Ksuid do
   @ksuid_encoded_length 27
   @parse_error "the value given is more than the max Ksuid value possible"
 
-  defp get_ts() do
+  defp get_ts do
     ts = System.system_time(:second) - @epoch
     # length of the time stamp is 32 bits
     <<ts::32>>
   end
 
-  defp get_bytes() do
+  defp get_bytes do
     :crypto.strong_rand_bytes(@payload_length)
   end
 
@@ -33,7 +34,7 @@ defmodule LibEcto.Ksuid do
 
   """
   @spec generate() :: binary()
-  def generate() do
+  def generate do
     kuid_as_bytes = get_ts() <> get_bytes()
 
     kuid_as_bytes
@@ -54,7 +55,7 @@ defmodule LibEcto.Ksuid do
     else
       decoded
       |> apply_padding(<<0>>, @ksuid_raw_length)
-      |> normalize
+      |> normalize()
     end
   end
 
@@ -65,8 +66,7 @@ defmodule LibEcto.Ksuid do
     gen_padding(pad, pad_char) <> bytes
   end
 
-  defp gen_padding(length, pad_char) when length > 0,
-    do: pad_char <> gen_padding(length - 1, pad_char)
+  defp gen_padding(length, pad_char) when length > 0, do: pad_char <> gen_padding(length - 1, pad_char)
 
   defp gen_padding(0, _), do: <<>>
 

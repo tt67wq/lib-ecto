@@ -20,17 +20,16 @@ defmodule LibEcto.Base62 do
       ```
   """
 
-  @chars "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" |> String.graphemes()
+  @chars String.graphemes("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 
   @decode_chars @chars |> Enum.with_index() |> Map.new()
-  @encode_chars @chars |> List.to_tuple()
+  @encode_chars List.to_tuple(@chars)
 
   @spec bin_to_integer(binary()) :: integer()
   def bin_to_integer(bin) do
     list_of_bytes = for <<byte::8 <- bin>>, do: byte
 
-    list_of_bytes
-    |> Integer.undigits(256)
+    Integer.undigits(list_of_bytes, 256)
   end
 
   @spec encode(binary() | integer()) :: binary()
@@ -39,19 +38,16 @@ defmodule LibEcto.Base62 do
   def encode(byte_data) when is_bitstring(byte_data) do
     byte_data
     # convert it into an integer
-    |> bin_to_integer
+    |> bin_to_integer()
     # uses the integer version of encode now
-    |> encode
+    |> encode()
   end
 
   def encode(integer_data) when is_integer(integer_data) do
     cache = @encode_chars
 
-    integer_data
     # get mod 62 numbers into a list
-    |> Integer.digits(62)
-    |> Enum.map(fn data -> elem(cache, data) end)
-    |> Enum.into("")
+    integer_data |> Integer.digits(62) |> Enum.into("", fn data -> elem(cache, data) end)
   end
 
   @spec decode!(binary()) :: binary()
