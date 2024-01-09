@@ -1,16 +1,20 @@
 defmodule LibEcto.Test do
+  @moduledoc false
   use ExUnit.Case
 
   alias LibEcto.KsuidType
 
   defmodule Repo do
+    @moduledoc false
     use Ecto.Repo,
       otp_app: :my_app,
       adapter: Ecto.Adapters.SQLite3
   end
 
   defmodule Test.Schema do
+    @moduledoc false
     use Ecto.Schema
+
     import Ecto.Changeset
 
     @primary_key {:id, KsuidType, autogenerate: true}
@@ -21,12 +25,12 @@ defmodule LibEcto.Test do
     end
 
     def changeset(m, params) do
-      m
-      |> cast(params, [:name, :value])
+      cast(m, params, [:name, :value])
     end
   end
 
   defmodule Test.DB do
+    @moduledoc false
     use LibEcto,
       repo: Repo,
       schema: Test.Schema,
@@ -43,8 +47,7 @@ defmodule LibEcto.Test do
     def filter(:id, dynamic, %{"id" => value}) when is_bitstring(value),
       do: {:ok, dynamic([m], ^dynamic and m.id == ^value)}
 
-    def filter(:id, dynamic, %{"id" => value}) when is_list(value),
-      do: {:ok, dynamic([m], ^dynamic and m.id in ^value)}
+    def filter(:id, dynamic, %{"id" => value}) when is_list(value), do: {:ok, dynamic([m], ^dynamic and m.id in ^value)}
 
     def filter(:name, dynamic, %{"name" => value}) when is_bitstring(value),
       do: {:ok, dynamic([m], ^dynamic and m.name == ^value)}
