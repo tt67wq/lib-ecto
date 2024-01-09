@@ -153,6 +153,40 @@ All supported functions:
 
 For more usage details, please check the test cases, which covers all the supported functions.
 
+
+## V2
+V2 is a complete rewrite of LibEcto, it's much more powerful and flexible. It simply breaks down the original complex macros into more reasonable ones. The only difference with LibEcto is the DB layer, Here's how to use it:
+
+```Elixir
+  defmodule Test.DB do
+    @moduledoc false
+    use LibEctoV2
+
+    @repo Repo
+    @schema Test.Schema
+    @columns [:id, :name, :value]
+    @filters [:id, :name]
+
+    def filter(:id, dynamic, %{"id" => value}) when is_bitstring(value),
+      do: {:ok, dynamic([m], ^dynamic and m.id == ^value)}
+
+    def filter(:id, dynamic, %{"id" => value}) when is_list(value), do: {:ok, dynamic([m], ^dynamic and m.id in ^value)}
+
+    def filter(:name, dynamic, %{"name" => value}) when is_bitstring(value),
+      do: {:ok, dynamic([m], ^dynamic and m.name == ^value)}
+
+    def filter(:name, dynamic, %{"name" => {"like", value}}) when is_bitstring(value),
+      do: {:ok, dynamic([m], ^dynamic and like(m.name, ^value))}
+
+    def filter(:name, dynamic, %{"name" => value}) when is_list(value),
+      do: {:ok, dynamic([m], ^dynamic and m.name in ^value)}
+
+    def filter(_, dynamic, _), do: {:ok, dynamic}
+
+    def init_filter, do: dynamic([m], m.removed_at == 0)
+  end
+```
+
 ## Installation
 
 The package can be installed by adding `lib_ecto` to your list of dependencies in `mix.exs`:
@@ -160,7 +194,7 @@ The package can be installed by adding `lib_ecto` to your list of dependencies i
 ```elixir
 def deps do
   [
-    {:lib_ecto, "~> 0.2"}
+    {:lib_ecto, "~> 0.3"}
   ]
 end
 ```
