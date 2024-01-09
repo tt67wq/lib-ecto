@@ -126,7 +126,7 @@ defmodule LibEctoV2 do
           {:ok, %Simple.Schema{id: "2JIebKci1ZgKenvhllJa3PMbydB", name: "test", value: "testv"}}
 
       """
-      @spec get_one(filter_t(), columns_t()) :: {:ok, schema_t()} | err_t()
+      @spec get_one(filter_t(), columns_t()) :: {:ok, schema_t() | nil} | err_t()
       def get_one(params, cols \\ unquote(columns)) do
         init = apply(__MODULE__, :init_filter, [])
         filter_fn = &apply(__MODULE__, :filter, [&1, &2, &3])
