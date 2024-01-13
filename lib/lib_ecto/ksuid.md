@@ -97,3 +97,13 @@ Create `:id` as `:bytea`, and primary key - similary to usage with `:binary_id`
     end
   end
 ```
+
+
+### Attention!!!!
+Some databases(like MySQL) have a default case-insensitive comparison for binary. If you use ksuid as the primary key and need to compare or sort ids, you need to use the SQL binary() function.
+
+```Elixir
+query = from t in TestSchema, where: fragment("binary(?)", t.id) > ^id
+
+repo.all(query, order_by: [desc: fragment("binary(?)", t.id)])
+```
