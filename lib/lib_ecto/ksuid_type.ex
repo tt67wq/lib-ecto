@@ -21,6 +21,17 @@ defmodule LibEcto.KsuidType do
     end
   end
   ```
+
+  ## BE CAREFUL!!!!
+  If you are using ksuid as your primary key, it is important to declare the id type as binary when creating your table.
+  Failing to do so may result in problems with sorting and comparison.
+
+  ```SQL
+  CREATE TABLE test_table (
+    id VARCHAR(20) BINARY PRIMARY KEY,
+    name VARCHAR(50)
+  );
+  ```
   """
 
   use Ecto.Type
