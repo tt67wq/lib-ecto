@@ -10,7 +10,10 @@ defmodule LibEctoV2 do
       import Ecto.Changeset
       import Ecto.Query
 
-      Module.register_attribute(__MODULE__, :greet, accumulate: true, persist: false)
+      Module.register_attribute(__MODULE__, :repo, accumulate: true, persist: false)
+      Module.register_attribute(__MODULE__, :schema, accumulate: true, persist: false)
+      Module.register_attribute(__MODULE__, :columns, accumulate: true, persist: false)
+      Module.register_attribute(__MODULE__, :filters, accumulate: true, persist: false)
 
       @before_compile LibEctoV2
     end
