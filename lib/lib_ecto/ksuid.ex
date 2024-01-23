@@ -13,15 +13,10 @@ defmodule LibEcto.Ksuid do
   @ksuid_encoded_length 27
   @parse_error "the value given is more than the max Ksuid value possible"
 
-  defp get_ts do
-    ts = System.system_time(:second) - @epoch
-    # length of the time stamp is 32 bits
-    <<ts::32>>
-  end
+  # length of the time stamp is 32 bits
+  defp get_ts(ts), do: <<ts - @epoch::32>>
 
-  defp get_bytes do
-    :crypto.strong_rand_bytes(@payload_length)
-  end
+  defp get_bytes, do: :crypto.strong_rand_bytes(@payload_length)
 
   @doc """
   This method returns a 20 byte Ksuid which has 4 bytes as timestamp
@@ -33,11 +28,11 @@ defmodule LibEcto.Ksuid do
       "0KZi94b2fnVzpGi60FoZgXIvUtYy"
 
   """
-  @spec generate() :: binary()
-  def generate do
-    kuid_as_bytes = get_ts() <> get_bytes()
-
-    kuid_as_bytes
+  @spec generate(non_neg_integer()) :: binary()
+  def generate(ts \\ System.system_time(:second)) do
+    ts
+    |> get_ts()
+    |> Kernel.<>(get_bytes())
     |> Base62.encode()
     # <<48>> is zero on decoding
     |> apply_padding(<<48>>, @ksuid_encoded_length)
