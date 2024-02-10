@@ -3,7 +3,7 @@ defmodule LibEcto.MixProject do
   use Mix.Project
 
   @name "lib_ecto"
-  @version "0.3.4"
+  @version "0.3.5"
   @repo_url "https://github.com/tt67wq/lib-ecto"
   @description "A library to make Ecto easier to use"
 
