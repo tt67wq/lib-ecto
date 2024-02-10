@@ -7,6 +7,11 @@ defmodule LibEcto.Ksuid do
 
   alias LibEcto.Base62
 
+  @typedoc """
+  A Ksuid is a unique identifier that is made up of a timestamp and a random
+  """
+  @type t :: binary()
+
   @epoch 1_400_000_000
   @payload_length 16
   @ksuid_raw_length 20
