@@ -7,6 +7,8 @@ defmodule LibEctoV2 do
 
   defmacro __using__(_) do
     quote do
+      @before_compile LibEctoV2
+
       import Ecto.Changeset
       import Ecto.Query
 
@@ -14,8 +16,6 @@ defmodule LibEctoV2 do
       Module.register_attribute(__MODULE__, :schema, [])
       Module.register_attribute(__MODULE__, :columns, [])
       Module.register_attribute(__MODULE__, :filters, [])
-
-      @before_compile LibEctoV2
     end
   end
 
@@ -171,13 +171,13 @@ defmodule LibEctoV2 do
           iex> Sample.DB.get_one!(%{"name"=> "not-exists"})
           ** (RuntimeError) not found
       """
-      @spec get_one!(filter_t(), columns_t()) :: {:ok, schema_t()} | err_t()
+      @spec get_one!(filter_t(), columns_t()) :: schema_t() | err_t()
       def get_one!(params, cols \\ @columns) do
         params
         |> get_one(cols)
         |> case do
           {:ok, nil} -> raise "not found"
-          {:ok, ret} -> {:ok, ret}
+          {:ok, ret} -> ret
           err -> err
         end
       end
