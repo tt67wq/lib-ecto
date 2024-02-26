@@ -149,34 +149,34 @@ defmodule LibEctoV2 do
           iex> Sample.DB.get_one(%{"name"=> "test"})
           {:ok, %Simple.Schema{id: "2JIebKci1ZgKenvhllJa3PMbydB", name: "test", value: "testv"}}
           iex> Sample.DB.get_one(%{"name"=> "not-exists"})
-          {:error, "not found"}
+          {:error, LibEcto.Exception, [message: "not found", details: %{"name" => "not-exits"}]}
       """
       @spec fetch_one(filter_t(), columns_t()) :: {:ok, schema_t()} | err_t()
       def fetch_one(params, cols \\ unquote(columns)) do
         params
         |> get_one(cols)
         |> case do
-          {:ok, nil} -> {:error, :"not found"}
+          {:ok, nil} -> {:error, LibEcto.Exception, message: "not found", details: params}
           {:ok, ret} -> {:ok, ret}
           err -> err
         end
       end
 
       @doc """
-      Force get one record from the database by your params. if not found, return 404.
+      Force get one record from the database by your params. if not found, raise LibEcto.Exception.
 
 
       ## Examples
 
           iex> Sample.DB.get_one!(%{"name"=> "not-exists"})
-          ** (RuntimeError) not found
+          ** LibEcto.Exception (** (Exception) not found: [{"name", "not-exists"}]
       """
       @spec get_one!(filter_t(), columns_t()) :: schema_t() | err_t()
-      def get_one!(params, cols \\ @columns) do
+      def get_one!(params, cols \\ unquote(columns)) do
         params
         |> get_one(cols)
         |> case do
-          {:ok, nil} -> raise "not found"
+          {:ok, nil} -> raise LibEcto.Exception, message: "not found", details: params
           {:ok, ret} -> ret
           err -> err
         end
@@ -346,7 +346,7 @@ defmodule LibEctoV2 do
   defmacro __before_compile__(env) do
     repo = Module.get_attribute(env.module, :repo)
     schema = Module.get_attribute(env.module, :schema)
-    columns = Module.get_attribute(env.module, :columns)
+    columns = schema.__schema__(:fields)
     filters = Module.get_attribute(env.module, :filters, [:id])
 
     a = generate_types(schema)

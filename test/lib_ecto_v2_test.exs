@@ -35,7 +35,6 @@ defmodule LibEctoV2Test do
 
     @repo Repo
     @schema Test.Schema
-    @columns [:id, :name, :value]
     @filters [:id, :name]
 
     def filter(:id, dynamic, %{"id" => value}) when is_bitstring(value),
@@ -99,6 +98,7 @@ defmodule LibEctoV2Test do
     assert {:ok, 0} = Test.DB.count(%{})
   end
 
+  @tag run: true
   test "get one" do
     assert {:ok, _} = Test.DB.create_one(%{name: "name5", value: "val5"})
 
@@ -106,9 +106,10 @@ defmodule LibEctoV2Test do
     assert r.name == "name5"
     assert r.value == "val5"
 
-    assert {:error, :"not found"} = Test.DB.fetch_one(%{"name" => "name6"})
+    assert {:error, LibEcto.Exception, [message: "not found", details: %{"name" => "name6"}]} =
+             Test.DB.fetch_one(%{"name" => "name6"})
 
-    assert_raise RuntimeError, fn -> Test.DB.get_one!(%{"name" => "name6"}) end
+    assert_raise LibEcto.Exception, fn -> Test.DB.get_one!(%{"name" => "name6"}) end
   end
 
   test "get many" do
