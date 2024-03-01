@@ -149,14 +149,14 @@ defmodule LibEctoV2 do
           iex> Sample.DB.get_one(%{"name"=> "test"})
           {:ok, %Simple.Schema{id: "2JIebKci1ZgKenvhllJa3PMbydB", name: "test", value: "testv"}}
           iex> Sample.DB.get_one(%{"name"=> "not-exists"})
-          {:error, LibEcto.Exception, [message: "not found", details: %{"name" => "not-exits"}]}
+          {:error, %LibEcto.Exception{message: "not found", details: %{"name" => "not-exits"}}
       """
       @spec fetch_one(filter_t(), columns_t()) :: {:ok, schema_t()} | err_t()
       def fetch_one(params, cols \\ unquote(columns)) do
         params
         |> get_one(cols)
         |> case do
-          {:ok, nil} -> {:error, LibEcto.Exception, message: "not found", details: params}
+          {:ok, nil} -> {:error, LibEcto.Exception.new("not found", params)}
           {:ok, ret} -> {:ok, ret}
           err -> err
         end
