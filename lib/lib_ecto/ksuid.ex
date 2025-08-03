@@ -1,9 +1,5 @@
 defmodule LibEcto.Ksuid do
-  @moduledoc __DIR__
-             |> Path.join("ksuid.md")
-             |> File.read!()
-             |> String.split("<!-- MDOC !-->")
-             |> Enum.fetch!(1)
+  @moduledoc false
 
   alias LibEcto.Base62
 
