@@ -33,7 +33,6 @@ defmodule LibEcto.MixProject do
     [
       {:jason, "~> 1.4"},
       {:ecto_sql, "~> 3.13"},
-      {:ecto_sqlite3, "~> 0.21", only: :test},
       {:ex_doc, "~> 0.38", only: :dev, runtime: false},
       {:styler, "~> 0.11", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
